@@ -12,4 +12,4 @@ COPY evals ./evals
 
 RUN uv sync --frozen --all-groups
 
-CMD ["uv", "run", "python", "-c", "import fabrica; print('fabrica template container ready')"]
+CMD ["uv", "run", "python", "-c", "import pubmed_digest; print('pubmed-digest container ready')"]

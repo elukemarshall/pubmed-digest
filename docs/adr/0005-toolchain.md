@@ -1,4 +1,9 @@
-# ADR-0001: Python Toolchain for the AI/ML Project Template
+# ADR-0005: Python Toolchain (inherited from Fabrica template)
+
+> **Note:** this ADR was originally `0001-toolchain.md` in the Fabrica
+> scaffold and is preserved here verbatim (heading renumbered) so future
+> readers can see why the toolchain looks the way it does. ADRs 0001–0004
+> cover pubmed-digest's project-level design decisions.
 
 **Status:** Accepted
 **Date:** 2026-04-30

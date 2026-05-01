@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `fabrica` are documented in this file.
+All notable changes to `pubmed-digest` are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,8 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Minimal Dockerfile and `.dockerignore` for reproducible container smoke tests.
-- README container smoke-test instructions.
+- Spawned from the Fabrica template; renamed package to `pubmed_digest`.
+- `docs/SPEC.md` and ADRs 0001–0004 covering metadata-first retrieval,
+  structured-output grounding, model routing, and benchmark methodology.
+- ADR 0005 preserves the inherited toolchain rationale (formerly ADR 0001).
 
 ## [0.1.0] - 2026-04-30
 
