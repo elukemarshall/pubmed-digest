@@ -15,18 +15,15 @@
    the cards together into a digest answering the query. Quality
    matters more than cost on this single call.
 
-Per `MULTI_MODEL_STRATEGY.md`, the curriculum's bedrock principle is
-"model choice is a design decision, not a default." Every LLM-using
-project must answer: **which models, why, at what cost, with what
-fallback?** And the implementation must keep the answer swappable
-because the frontier moves every quarter.
+This project treats model choice as a design decision, not a default.
+Every LLM-using feature must answer: **which models, why, at what
+cost, with what fallback?** And the implementation must keep the
+answer swappable because the frontier moves every quarter.
 
-`MULTI_MODEL_STRATEGY.md` also makes the model-version hygiene rule
-explicit: this ADR pins **roles** and the policy for choosing models
-within those roles. **Exact model IDs are pinned in `models.toml`**
-(or equivalent config) at the moment of build, after a current-source
-verification against provider docs. The ADR does not hard-code IDs
-that will rot.
+This ADR pins **roles** and the policy for choosing models within those
+roles. **Exact model IDs are pinned in `models.toml`** (or equivalent
+config) at the moment of build, after a current-source verification
+against provider docs. The ADR does not hard-code IDs that will rot.
 
 ## Decision
 
@@ -62,15 +59,14 @@ Stated as **capability tiers** rather than IDs, so this ADR survives
 quarterly model churn. Exact IDs live in `models.toml`.
 
 - **`card` role primary:** a current cheap+fast frontier or open-weight
-  tier — the kind of work `MULTI_MODEL_STRATEGY.md` matches to "cheap
-  bulk summarization" (e.g., a current Kimi K2.x frontier via
-  OpenRouter, a current Gemini Flash tier, or a current Claude Haiku
-  tier).
+  tier suited to cheap bulk summarization (e.g., a current Kimi K2.x
+  frontier via OpenRouter, a current Gemini Flash tier, or a current
+  Claude Haiku tier).
 - **`card` role fallback:** a different-provider model in the same tier,
   to survive a single-provider outage without a manual config change.
 - **`synthesis` role primary:** a current balanced reasoning frontier
-  tier — `MULTI_MODEL_STRATEGY.md`'s "structured extraction with strong
-  reasoning" default, e.g., a current Claude Sonnet tier.
+  tier suited to structured extraction with strong reasoning, e.g., a
+  current Claude Sonnet tier.
 - **`synthesis` role fallback:** a current OpenAI flagship or Gemini Pro
   tier.
 
@@ -134,11 +130,10 @@ per_eval_usd = 5.00
 Pick Anthropic (or OpenAI), use their SDK directly.
 
 - **Pro:** simplest. Best-in-class type hints.
-- **Con:** violates `MULTI_MODEL_STRATEGY.md`'s explicit guidance.
+- **Con:** violates the project's provider-agnostic routing policy.
 - **Con:** swapping for a benchmark requires rewriting call sites.
-- **Con:** the curriculum's career corollary is that a Claude-only
-  portfolio reads as "pragmatic user" not "engineer who thinks about
-  tradeoffs." This is a portfolio project.
+- **Con:** a Claude-only portfolio reads as "pragmatic user" not
+  "engineer who thinks about tradeoffs." This is a portfolio project.
 
 ### Option B — Single role, one model for everything
 
@@ -166,9 +161,8 @@ Two roles, named in config, swap per-role independently.
 
 The tradeoff is **abstraction overhead vs lock-in cost**. LiteLLM adds
 a thin layer between us and provider SDKs; in exchange, we never write
-a "migrate from X to Y" PR. For a curriculum that explicitly tracks the
-frontier quarterly (per `CURRICULUM.md`), this is unambiguously the
-right tradeoff.
+a "migrate from X to Y" PR. For a project that explicitly tracks the
+frontier quarterly, this is unambiguously the right tradeoff.
 
 A subtler tradeoff: per-role routing means a future feature
 (e.g., "add a reranker model") becomes a new role rather than a

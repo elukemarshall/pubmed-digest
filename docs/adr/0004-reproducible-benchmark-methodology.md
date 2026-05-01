@@ -6,7 +6,7 @@
 
 ## Context
 
-Per `CURRICULUM.md`, every LLM-using project must answer:
+Every LLM-using project must answer:
 
 1. Which model(s) and why?
 2. What alternatives were compared?

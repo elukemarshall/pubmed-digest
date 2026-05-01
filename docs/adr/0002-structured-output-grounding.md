@@ -35,9 +35,9 @@ Both failure modes need first-class handling, not best-effort prompting.
 
 Use **Instructor** (`pip install instructor`) over **LiteLLM** to wrap
 every LLM call. Output schemas are Pydantic models. The Instructor +
-LiteLLM combination is the curriculum default per `MULTI_MODEL_STRATEGY.md`
-because it is provider-agnostic and gives Pydantic-validated outputs
-with built-in retry on schema violation.
+LiteLLM combination keeps the implementation provider-agnostic while
+giving Pydantic-validated outputs with built-in retry on schema
+violation.
 
 Two top-level Pydantic schemas:
 

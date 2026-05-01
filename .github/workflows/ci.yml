@@ -37,3 +37,6 @@ jobs:
 
       - name: Test with pytest
         run: uv run pytest
+
+      - name: Build container smoke image
+        run: docker build -t pubmed-digest .

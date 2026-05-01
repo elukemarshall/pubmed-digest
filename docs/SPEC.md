@@ -235,7 +235,7 @@ Per the curriculum's production-readiness rubric:
 
 ---
 
-## 9. Quality bar (per `CURRICULUM.md`)
+## 9. Quality bar
 
 - [ ] README with: problem statement, target user, architecture,
       install/run, testing, non-goals — done in scaffold; will be
