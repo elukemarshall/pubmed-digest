@@ -13,8 +13,8 @@
 
 ## 1. Project context
 
-`pubmed-digest` is **Phase 1, Project 1** of the
-[biotech-ai-ml-curriculum](../../biotech-ai-ml-curriculum/CURRICULUM.md).
+`pubmed-digest` is **Phase 1, Project 1** of a private biotech AI/ML
+curriculum.
 
 - **Phase:** 1 — Biotech tools and API fluency.
 - **Project type:** engineering-first repo.
@@ -35,8 +35,8 @@ citations. The friction is not the LLM; it is the manual, repetitive
 ranking and reading.
 
 A small CLI that does the **metadata-first ranking + structured,
-citation-grounded summarization** in one command turns a 30-minute
-manual triage into a 2–3-minute reviewable artifact.
+citation-grounded summarization** in one command is designed to turn a
+manual triage session into a short, reviewable artifact.
 
 The output must be:
 
@@ -159,6 +159,7 @@ src/pubmed_digest/
 │   └── pipeline.py       ← orchestration: query → top_k abstracts
 ├── llm/
 │   ├── router.py         ← role-routed LiteLLM caller (ADR-0003)
+│   ├── cache.py          ← SQLite-backed LLM call cache (ADR-0003)
 │   ├── prompts/          ← versioned prompt templates
 │   └── verifier.py       ← post-generation grounding verifier (ADR-0002)
 ├── digest/
@@ -213,7 +214,7 @@ inherited Fabrica toolchain rationale (uv, ruff, pyright, hatchling).
 
 ## 8. Production drill (Phase 1 minimum)
 
-Per [`PRODUCTION_READINESS.md`](../../biotech-ai-ml-curriculum/PRODUCTION_READINESS.md):
+Per the curriculum's production-readiness rubric:
 
 - [ ] **Dockerfile** for reproducible CLI execution (already
       present from Fabrica; will be extended with the runtime entry
@@ -257,8 +258,9 @@ Per [`PRODUCTION_READINESS.md`](../../biotech-ai-ml-curriculum/PRODUCTION_READIN
 The following are explicit "do not build in v1" commitments:
 
 - Web UI, REST API, or any networked service.
-- A persistent database (SQLite cache for NCBI responses is the only
-  on-disk state).
+- A persistent application database. Local caches are allowed for NCBI
+  responses and LLM call reuse, but they are implementation caches, not
+  user-facing state.
 - A vector index of any kind.
 - Any patient-facing or clinical-decision feature.
 - Multi-tenant features (auth, accounts, quotas).
@@ -273,9 +275,10 @@ project's* scope — not this one's.
 
 1. **CLI ergonomics.** Typer or argparse? Lean argparse for zero new
    deps unless typer's UX earns its keep on the sub-command surface.
-2. **Cache backend.** Plain filesystem (request hash → JSON file) vs
-   SQLite. Filesystem is simpler; SQLite gives atomicity for
-   concurrent runs. Likely filesystem for v1.
+2. **NCBI cache backend.** Plain filesystem (request hash → JSON file)
+   vs SQLite. Filesystem is simpler; SQLite gives atomicity for
+   concurrent runs. Likely filesystem for NCBI responses in v1. LLM call
+   caching is separate and follows ADR-0003's SQLite-backed cache.
 3. **API key management.** Document `NCBI_API_KEY` and provider keys
    via `.env.example` only? Or build a `--config` flag that points at
    a local TOML? Likely `.env` only for v1 — TOML config is for

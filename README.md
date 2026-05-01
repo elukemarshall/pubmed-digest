@@ -11,9 +11,8 @@ synthesizes per-paper cards plus a cross-paper digest with structured,
 citation-grounded outputs. Multiple model backends are benchmarked on frozen
 local fixtures.
 
-> **Status:** Phase 1, Project 1 of the
-> [biotech-ai-ml-curriculum](../biotech-ai-ml-curriculum/). Design phase —
-> SPEC and ADRs land before app code.
+> **Status:** Phase 1, Project 1 of a private biotech AI/ML curriculum.
+> Design phase — SPEC and ADRs land before app code.
 
 ## Who this is for
 
@@ -23,11 +22,11 @@ cited summary than running a PubMed search and reading abstracts by hand.
 
 ## Why it matters
 
-Manual literature triage is the dominant time cost in biotech knowledge
-work. A small CLI that pre-ranks by metadata, fetches abstracts only for
-ranked top-k, and produces structured per-paper cards with citations turns
-30 minutes of triage into 2–3 minutes — and the structured output makes
-the result reusable in downstream tools.
+Manual literature triage is a major time cost in biotech knowledge work.
+A small CLI that pre-ranks by metadata, fetches abstracts only for ranked
+top-k, and produces structured per-paper cards with citations is designed
+to turn a manual triage session into a short, reviewable artifact — and the
+structured output makes the result reusable in downstream tools.
 
 ## Non-goals
 
