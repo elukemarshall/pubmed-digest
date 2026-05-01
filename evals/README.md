@@ -4,7 +4,7 @@ The reusable evaluation pattern for projects created from this template.
 
 ## Why this exists
 
-The curriculum's quality bar requires every LLM- or ML-backed project to answer:
+This portfolio's quality bar requires every LLM- or ML-backed project to answer:
 
 1. Which model(s) and why?
 2. What alternatives were compared?

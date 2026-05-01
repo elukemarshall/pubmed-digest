@@ -1,7 +1,7 @@
 # ADR-0005: Python Toolchain (inherited from Fabrica template)
 
 > **Note:** this ADR was originally `0001-toolchain.md` in the Fabrica
-> scaffold and is preserved here verbatim (heading renumbered) so future
+> scaffold and is preserved here with the heading renumbered so future
 > readers can see why the toolchain looks the way it does. ADRs 0001–0004
 > cover pubmed-digest's project-level design decisions.
 
@@ -11,7 +11,7 @@
 
 ## Context
 
-This repository is the canonical Python project template for the curriculum
+This repository is the canonical Python project template for this public
 portfolio. Every project created from it inherits its toolchain decisions, so
 the choices made here compound across every future repo.
 

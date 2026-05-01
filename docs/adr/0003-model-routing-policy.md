@@ -194,8 +194,8 @@ right unit of swap-ability.
   its complexity. If `card` and `synthesis` end up using the same
   model anyway, collapse to one role.
 - Quarterly: re-verify model IDs in `models.toml` against provider
-  docs. Stale IDs are a real failure mode the curriculum is calling
-  out — don't let this project become an example of it.
+  docs. Stale IDs are a real failure mode for any multi-provider LLM
+  project — don't let this repo become an example of it.
 - If LiteLLM stops being the de-facto provider-agnostic layer (e.g.,
   if Pydantic AI's provider abstraction matures past it), revisit.
 

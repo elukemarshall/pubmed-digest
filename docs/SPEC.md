@@ -13,8 +13,8 @@
 
 ## 1. Project context
 
-`pubmed-digest` is **Phase 1, Project 1** of a private biotech AI/ML
-curriculum.
+`pubmed-digest` is an early biotech AI/ML portfolio project focused on
+scientific literature triage.
 
 - **Phase:** 1 — Biotech tools and API fluency.
 - **Project type:** engineering-first repo.
@@ -62,8 +62,8 @@ Primary users:
 
 Secondary user:
 
-- The author, as a tool used inside other curriculum projects (Phase 2
-  agents will likely import the retrieval client).
+- The author, as a reusable retrieval/summarization component that
+  future biomedical agent projects can import.
 
 This tool is **not** for patient-facing clinical decision support and
 is **not** for end users without biomedical literacy. The output
@@ -214,7 +214,7 @@ inherited Fabrica toolchain rationale (uv, ruff, pyright, hatchling).
 
 ## 8. Production drill (Phase 1 minimum)
 
-Per the curriculum's production-readiness rubric:
+Per the portfolio production-readiness rubric:
 
 - [ ] **Dockerfile** for reproducible CLI execution (already
       present from Fabrica; will be extended with the runtime entry

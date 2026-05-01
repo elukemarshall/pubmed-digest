@@ -116,7 +116,7 @@ Each (query, model) pair is graded along **four orthogonal axes**:
 
 A single composite score is **not** computed. Each model gets a
 four-axis result line that the ADR-0003 switching rule reads. Composite
-scores hide tradeoffs the curriculum is explicitly trying to teach
+scores hide the tradeoffs this project needs to make visible
 (quality vs cost vs latency).
 
 ### Outputs

@@ -11,8 +11,8 @@ synthesizes per-paper cards plus a cross-paper digest with structured,
 citation-grounded outputs. Multiple model backends are benchmarked on frozen
 local fixtures.
 
-> **Status:** Phase 1, Project 1 of a private biotech AI/ML curriculum.
-> Design phase — SPEC and ADRs land before app code.
+> **Status:** Early design-phase portfolio project.
+> SPEC and ADRs land before app code.
 
 ## Who this is for
 
