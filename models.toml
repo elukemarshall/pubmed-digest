@@ -1,0 +1,44 @@
+[card]
+budget_kind = "per_card"
+budget_usd = 0.005
+
+[card.primary]
+provider = "TODO"
+model = "TODO_CARD_PRIMARY_MODEL"
+verification_status = "pending"
+notes = "Pick a cheap bulk extraction tier after provider-doc verification."
+
+[card.fallback]
+provider = "TODO"
+model = "TODO_CARD_FALLBACK_MODEL"
+verification_status = "pending"
+notes = "Choose a different provider than the primary where possible."
+
+[synthesis]
+budget_kind = "per_run"
+budget_usd = 0.10
+
+[synthesis.primary]
+provider = "TODO"
+model = "TODO_SYNTHESIS_PRIMARY_MODEL"
+verification_status = "pending"
+notes = "Pick a stronger reasoning model after provider-doc verification."
+
+[synthesis.fallback]
+provider = "TODO"
+model = "TODO_SYNTHESIS_FALLBACK_MODEL"
+verification_status = "pending"
+notes = "Prefer a different provider than the primary."
+
+[budgets]
+per_run_usd = 0.50
+per_eval_usd = 5.00
+
+[ncbi]
+requests_per_second_without_key = 3
+requests_per_second_with_key = 10
+cache_ttl_hours = 168
+esearch_retmax_default = 200
+esearch_retmax_hard_cap = 1000
+top_k_default = 10
+top_k_hard_cap = 25

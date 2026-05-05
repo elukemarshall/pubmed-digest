@@ -1,0 +1,8 @@
+{
+  "query_id": "unsupported_glp1_alzheimers_claim",
+  "status": "scaffold",
+  "relevant_pmids": [],
+  "key_facts": [],
+  "abstention_targets": [],
+  "notes": "Populate after the first live PubMed fixture capture pass."
+}

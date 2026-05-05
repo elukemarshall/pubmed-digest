@@ -9,7 +9,9 @@ authors = [
     { name = "Luke Marshall", email = "99937587+elukemarshall@users.noreply.github.com" }
 ]
 keywords = ["biotech", "pubmed", "literature", "summarization", "rag", "llm"]
-dependencies = []
+dependencies = [
+    "pydantic>=2.13.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/elukemarshall/pubmed-digest"

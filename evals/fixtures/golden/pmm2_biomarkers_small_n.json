@@ -1,0 +1,8 @@
+{
+  "query_id": "pmm2_biomarkers_small_n",
+  "status": "scaffold",
+  "relevant_pmids": [],
+  "key_facts": [],
+  "abstention_targets": [],
+  "notes": "Populate after the first live PubMed fixture capture pass."
+}

@@ -1,150 +1,98 @@
-"""Benchmark template for projects created from this template.
+"""Offline benchmark-fixture inventory for pubmed-digest.
 
-Pattern: define a small set of evaluation cases, define one or more model
-backends to test, run each (case, backend) pair, write results to a dated
-markdown table. The default backend is a stub so the template runs with no
-external dependencies; derived projects swap in real LiteLLM-backed calls.
-
-See `evals/README.md` for the upgrade path.
+The first Phase 1 implementation slice does not make live PubMed or live LLM
+calls yet. Instead, this module validates the frozen fixture scaffold and
+writes a dated inventory report that future benchmark work can build on.
 """
 
 from __future__ import annotations
 
-import time
+import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from collections.abc import Callable
+PROJECT_SRC = Path(__file__).resolve().parents[1] / "src"
+if str(PROJECT_SRC) not in sys.path:
+    # Keep the benchmark runnable from the repo root without requiring install-time path tweaks.
+    sys.path.insert(0, str(PROJECT_SRC))
 
 RESULTS_DIR = Path(__file__).parent / "results"
 
 
 @dataclass
-class Case:
-    """One evaluation case — input prompt and expected behavior."""
+class FixtureInventoryRow:
+    """One per-query fixture inventory record."""
 
-    id: str
-    prompt: str
-    expected_keywords: list[str]
-
-
-@dataclass
-class Backend:
-    """One backend under test — name plus a callable that returns a response."""
-
-    name: str
-    invoke: Callable[[str], str]
+    query_id: str
+    expected_behavior: str
+    tags: list[str]
+    golden_status: str
+    pubmed_response_files: int
 
 
-@dataclass
-class Result:
-    """One (case, backend) outcome captured during a benchmark run."""
+def collect_fixture_inventory() -> list[FixtureInventoryRow]:
+    """Load the scaffolded fixture set and summarize its current completeness."""
+    from pubmed_digest.eval_fixtures import (
+        count_pubmed_response_files,
+        load_all_golden_cases,
+        load_query_fixtures,
+    )
 
-    case_id: str
-    backend: str
-    response: str
-    latency_ms: float
-    matched_keywords: int
+    queries = load_query_fixtures()
+    golden_cases = load_all_golden_cases()
+    response_counts = count_pubmed_response_files()
 
-
-# --- Sample cases (replace with real evaluation set in derived projects) ---
-
-CASES: list[Case] = [
-    Case(
-        id="biology_basic",
-        prompt="In one sentence, what is the function of mitochondria?",
-        expected_keywords=["energy", "ATP", "cell"],
-    ),
-    Case(
-        id="biotech_methodology",
-        prompt="In two sentences, what does CRISPR-Cas9 enable researchers to do?",
-        expected_keywords=["gene", "edit", "DNA"],
-    ),
-]
-
-
-# --- Sample backend (replace with real LiteLLM-backed calls) ---
-
-
-def _stub_invoke(prompt: str) -> str:
-    """Placeholder backend that echoes the prompt.
-
-    Derived projects should replace this with real LLM calls. Example
-    upgrade using LiteLLM (after `uv add litellm`):
-
-        from litellm import completion
-
-        def claude_sonnet(prompt: str) -> str:
-            response = completion(
-                model="claude-sonnet-4-6",
-                messages=[{"role": "user", "content": prompt}],
+    rows: list[FixtureInventoryRow] = []
+    for query in queries:
+        golden_case = golden_cases[query.id]
+        rows.append(
+            FixtureInventoryRow(
+                query_id=query.id,
+                expected_behavior=query.expected_behavior,
+                tags=query.tags,
+                golden_status=golden_case.status,
+                pubmed_response_files=response_counts.get(query.id, 0),
             )
-            return response.choices[0].message.content
-    """
-    return f"[stub response] Echo: {prompt[:80]}"
+        )
+    return rows
 
 
-BACKENDS: list[Backend] = [
-    Backend(name="stub", invoke=_stub_invoke),
-]
-
-
-def score(case: Case, response: str) -> int:
-    """Count how many expected keywords appear in the response (case-insensitive)."""
-    response_lower = response.lower()
-    return sum(1 for kw in case.expected_keywords if kw.lower() in response_lower)
-
-
-def run_benchmark() -> list[Result]:
-    """Run every case against every backend and return the results."""
-    results: list[Result] = []
-    for case in CASES:
-        for backend in BACKENDS:
-            start = time.perf_counter()
-            response = backend.invoke(case.prompt)
-            latency_ms = (time.perf_counter() - start) * 1000
-            results.append(
-                Result(
-                    case_id=case.id,
-                    backend=backend.name,
-                    response=response,
-                    latency_ms=latency_ms,
-                    matched_keywords=score(case, response),
-                )
-            )
-    return results
-
-
-def write_results(results: list[Result]) -> Path:
-    """Write results as a date-stamped markdown table; return the file path."""
+def write_results(rows: list[FixtureInventoryRow]) -> Path:
+    """Write a date-stamped markdown report describing fixture readiness."""
     today = datetime.now(UTC).strftime("%Y-%m-%d")
     out_path = RESULTS_DIR / f"results-{today}.md"
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
+    scaffold_count = sum(1 for row in rows if row.golden_status == "scaffold")
+    captured_count = sum(1 for row in rows if row.pubmed_response_files > 0)
+
     lines = [
-        f"# Benchmark results — {today}",
+        f"# Fixture inventory — {today}",
         "",
-        "| case | backend | latency (ms) | matched keywords | response (truncated) |",
-        "|------|---------|--------------|------------------|----------------------|",
+        f"- Queries defined: {len(rows)}",
+        f"- Golden cases still in scaffold status: {scaffold_count}",
+        f"- Queries with captured PubMed response files: {captured_count}",
+        "",
+        "| query_id | expected behavior | tags | golden status | captured response files |",
+        "|----------|-------------------|------|---------------|-------------------------|",
     ]
-    for r in results:
-        truncated = r.response.replace("|", "\\|").replace("\n", " ")[:80]
+    for row in rows:
+        tags = ", ".join(row.tags)
         lines.append(
-            f"| {r.case_id} | {r.backend} | {r.latency_ms:.1f} | "
-            f"{r.matched_keywords} | {truncated} |"
+            f"| {row.query_id} | {row.expected_behavior} | {tags} | "
+            f"{row.golden_status} | {row.pubmed_response_files} |"
         )
+
     out_path.write_text("\n".join(lines) + "\n")
     return out_path
 
 
 def main() -> None:
-    """Run the benchmark and write a dated results file."""
-    results = run_benchmark()
-    out_path = write_results(results)
-    print(f"Wrote {len(results)} results to {out_path}")
+    """Collect the offline fixture inventory and persist a dated report."""
+    rows = collect_fixture_inventory()
+    out_path = write_results(rows)
+    print(f"Wrote fixture inventory for {len(rows)} queries to {out_path}")
 
 
 if __name__ == "__main__":

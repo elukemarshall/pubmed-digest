@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docs/SPEC.md` and ADRs 0001–0004 covering metadata-first retrieval,
   structured-output grounding, model routing, and benchmark methodology.
 - ADR 0005 preserves the inherited toolchain rationale (formerly ADR 0001).
+- Runtime `pydantic` dependency for typed domain and config models.
+- `models.toml` scaffold with validated role, budget, and NCBI runtime config.
+- Offline benchmark fixture scaffold (`queries.jsonl`, golden case files, and
+  per-query response directories) for the first Phase 1 implementation slice.
 
 ## [0.1.0] - 2026-04-30
 

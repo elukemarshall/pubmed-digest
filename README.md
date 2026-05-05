@@ -11,8 +11,9 @@ synthesizes per-paper cards plus a cross-paper digest with structured,
 citation-grounded outputs. Multiple model backends are benchmarked on frozen
 local fixtures.
 
-> **Status:** Early design-phase portfolio project.
-> SPEC and ADRs land before app code.
+> **Status:** Early implementation-phase portfolio project.
+> Core schemas, config, and eval fixture scaffolding are in place;
+> retrieval, ranking, and live model wiring land next.
 
 ## Who this is for
 
