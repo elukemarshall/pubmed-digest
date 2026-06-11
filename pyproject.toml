@@ -10,7 +10,7 @@ authors = [
 ]
 keywords = ["biotech", "pubmed", "literature", "summarization", "rag", "llm"]
 dependencies = [
-    "pydantic>=2.13.3",
+    "pydantic>=2.13.4",
 ]
 
 [project.urls]
