@@ -23,7 +23,7 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.15.20",
     "pyright>=1.1.411",
-    "pre-commit>=4.6.0",
+    "pre-commit>=4.6.1",
 ]
 
 [build-system]
