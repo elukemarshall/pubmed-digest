@@ -72,3 +72,34 @@ def test_citation_requires_numeric_pmid() -> None:
     """Citation PMIDs must be closed-set-friendly numeric identifiers."""
     with pytest.raises(ValidationError):
         Citation(pmid="PMID:12345678", claim="This should fail.")
+
+
+@pytest.mark.parametrize("pub_date", ["2025", "2025-06", "2025-06-01"])
+def test_paper_card_accepts_partial_publication_dates(pub_date: str) -> None:
+    """PubMed dates may be year-only or year-month, so all three forms pass."""
+    card = make_paper_card().model_copy(update={"pub_date": pub_date})
+    assert PaperCard.model_validate(card.model_dump()).pub_date == pub_date
+
+
+@pytest.mark.parametrize("pub_date", ["25", "2025/06/01", "June 2025", "2025-6-1"])
+def test_paper_card_rejects_malformed_publication_dates(pub_date: str) -> None:
+    """Non-ISO publication dates are rejected rather than silently stored."""
+    payload = make_paper_card().model_dump() | {"pub_date": pub_date}
+    with pytest.raises(ValidationError):
+        PaperCard.model_validate(payload)
+
+
+def test_models_forbid_unknown_fields_and_strip_whitespace() -> None:
+    """Extra keys fail loudly and string fields are whitespace-normalized."""
+    with pytest.raises(ValidationError):
+        Citation.model_validate({"pmid": "1", "claim": "ok", "source": "llm"})
+
+    citation = Citation(pmid="  42  ", claim="  Stripped claim.  ")
+    assert citation.pmid == "42"
+    assert citation.claim == "Stripped claim."
+
+
+def test_digest_requires_at_least_one_paper_card() -> None:
+    """A digest with no paper cards has nothing to synthesize and is rejected."""
+    with pytest.raises(ValidationError):
+        Digest(query="q", paper_cards=[], cross_paper_synthesis="s")
