@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import datetime as dt
+
 import pytest
 from pydantic import ValidationError
 
@@ -67,3 +69,33 @@ def test_ncbi_config_accepts_defaults_equal_to_caps() -> None:
     )
 
     assert config.top_k_default == config.top_k_hard_cap
+
+
+def test_model_route_strips_whitespace_and_rejects_blank_fields() -> None:
+    """Provider/model are trimmed, and a whitespace-only value is rejected as empty."""
+    route = ModelRoute(provider="  anthropic ", model=" claude-sonnet-x  ")
+
+    assert route.provider == "anthropic"
+    assert route.model == "claude-sonnet-x"
+    with pytest.raises(ValidationError):
+        ModelRoute(provider="   ", model="claude-sonnet-x")
+
+
+def test_verified_model_route_with_date_is_accepted() -> None:
+    """A verified route that records its verification date is valid."""
+    route = ModelRoute(
+        provider="anthropic",
+        model="claude-sonnet-x",
+        verification_status="verified",
+        date_verified=dt.date(2026, 11, 22),
+    )
+
+    assert route.date_verified == dt.date(2026, 11, 22)
+
+
+def test_load_runtime_config_accepts_str_path_and_role_lookup() -> None:
+    """A string path loads the same config, and role() maps names to role blocks."""
+    config = load_runtime_config(str(DEFAULT_MODELS_PATH))
+
+    assert config.role("card") is config.card
+    assert config.role("synthesis") is config.synthesis
