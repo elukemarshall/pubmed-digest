@@ -10,6 +10,7 @@ from pydantic import ValidationError
 
 from pubmed_digest.eval_fixtures import (
     count_pubmed_response_files,
+    load_all_golden_cases,
     load_golden_case,
     load_query_fixtures,
 )
@@ -63,3 +64,25 @@ def test_count_pubmed_response_files_ignores_stray_files(tmp_path: Path) -> None
     (tmp_path / "README.json").write_text("{}")
 
     assert count_pubmed_response_files(tmp_path) == {"q1": 1, "q2": 0}
+
+
+def test_load_all_golden_cases_keys_by_query_id_and_skips_non_json(tmp_path: Path) -> None:
+    """Golden cases are keyed by their declared query_id, not the file name."""
+    (tmp_path / "a.json").write_text(json.dumps({"query_id": "q-alpha"}))
+    (tmp_path / "b.json").write_text(json.dumps({"query_id": "q-beta", "status": "captured"}))
+    (tmp_path / "notes.md").write_text("ignored")
+
+    cases = load_all_golden_cases(tmp_path)
+
+    assert sorted(cases) == ["q-alpha", "q-beta"]
+    assert cases["q-alpha"].status == "scaffold"
+    assert cases["q-beta"].status == "captured"
+
+
+def test_golden_case_rejects_unknown_status(tmp_path: Path) -> None:
+    """Status is a closed set so typos cannot masquerade as captured fixtures."""
+    path = tmp_path / "q1.json"
+    path.write_text(json.dumps({"query_id": "q1", "status": "done"}))
+
+    with pytest.raises(ValidationError):
+        load_golden_case(path)
