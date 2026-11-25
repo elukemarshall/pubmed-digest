@@ -103,3 +103,39 @@ def test_digest_requires_at_least_one_paper_card() -> None:
     """A digest with no paper cards has nothing to synthesize and is rejected."""
     with pytest.raises(ValidationError):
         Digest(query="q", paper_cards=[], cross_paper_synthesis="s")
+
+
+@pytest.mark.parametrize("field", ["authors", "pub_types"])
+def test_paper_card_requires_non_empty_author_and_type_lists(field: str) -> None:
+    """Authors and publication types are provenance, so empty lists are rejected."""
+    empty: list[str] = []
+    payload = make_paper_card().model_dump() | {field: empty}
+    with pytest.raises(ValidationError):
+        PaperCard.model_validate(payload)
+
+
+def test_paper_card_summary_length_boundaries() -> None:
+    """TLDR caps at 280 chars and why_it_matters at 500; the exact limits pass."""
+    base = make_paper_card().model_dump()
+    card = PaperCard.model_validate(base | {"tldr": "x" * 280, "why_it_matters": "y" * 500})
+    assert len(card.tldr) == 280
+    assert len(card.why_it_matters) == 500
+
+    with pytest.raises(ValidationError):
+        PaperCard.model_validate(base | {"why_it_matters": "y" * 501})
+
+
+def test_whitespace_only_strings_are_rejected_after_stripping() -> None:
+    """Stripping runs before min_length, so blank-looking claims cannot slip through."""
+    with pytest.raises(ValidationError):
+        Citation(pmid="42", claim="   ")
+
+
+def test_paper_card_optional_lists_default_to_empty() -> None:
+    """Omitted key_findings and limitations default to fresh empty lists."""
+    payload = make_paper_card().model_dump()
+    del payload["key_findings"], payload["limitations"]
+    first = PaperCard.model_validate(payload)
+    second = PaperCard.model_validate(payload)
+    assert first.key_findings == [] and first.limitations == []
+    assert first.key_findings is not second.key_findings
