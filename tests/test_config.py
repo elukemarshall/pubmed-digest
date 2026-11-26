@@ -9,8 +9,10 @@ from pydantic import ValidationError
 
 from pubmed_digest.config import (
     DEFAULT_MODELS_PATH,
+    BudgetConfig,
     ModelRoute,
     NCBIConfig,
+    RoleConfig,
     load_runtime_config,
 )
 
@@ -99,3 +101,29 @@ def test_load_runtime_config_accepts_str_path_and_role_lookup() -> None:
 
     assert config.role("card") is config.card
     assert config.role("synthesis") is config.synthesis
+
+
+@pytest.mark.parametrize("value", [0, -1.0])
+def test_budget_config_rejects_non_positive_caps(value: float) -> None:
+    """Spend caps must be strictly positive; zero or negative budgets are rejected."""
+    with pytest.raises(ValidationError):
+        BudgetConfig(per_run_usd=value, per_eval_usd=5.0)
+    with pytest.raises(ValidationError):
+        BudgetConfig(per_run_usd=1.0, per_eval_usd=value)
+
+
+def test_role_config_rejects_unknown_budget_kind_and_extra_fields() -> None:
+    """budget_kind is a closed set, and unexpected keys are forbidden."""
+    route = {"provider": "anthropic", "model": "claude-sonnet-x"}
+    valid = {
+        "primary": route,
+        "fallback": route,
+        "budget_kind": "per_card",
+        "budget_usd": 0.05,
+    }
+
+    assert RoleConfig.model_validate(valid).budget_kind == "per_card"
+    with pytest.raises(ValidationError):
+        RoleConfig.model_validate({**valid, "budget_kind": "per_day"})
+    with pytest.raises(ValidationError):
+        RoleConfig.model_validate({**valid, "temperature": 0.2})
